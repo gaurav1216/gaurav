@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maison Élise — Curated Boutique</title>
+  <meta name="description" content="Maison Élise is a curated boutique offering hand-picked apparel, accessories, and home goods crafted by independent designers." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header" id="top">
+    <nav class="nav container">
+      <a class="brand" href="#top">
+        <span class="brand-mark">M</span>
+        <span class="brand-name">Maison Élise</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#collections">Collections</a></li>
+        <li><a href="#lookbook">Lookbook</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#journal">Journal</a></li>
+        <li><a href="#visit">Visit</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="#visit" class="btn btn-ghost">Book Appointment</a>
+        <button class="icon-btn" aria-label="Cart">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 6h18l-2 12H5L3 6z" />
+            <path d="M8 6V4a4 4 0 018 0v2" />
+          </svg>
+          <span class="cart-count">0</span>
+        </button>
+      </div>
+      <button class="menu-toggle" aria-label="Menu" id="menuToggle">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-media" aria-hidden="true"></div>
+    <div class="hero-content container">
+      <p class="eyebrow">Spring / Summer 2026</p>
+      <h1>Quiet luxury,<br /><em>thoughtfully curated.</em></h1>
+      <p class="lede">A boutique of independent makers — slow fashion, considered objects, and pieces meant to last beyond the season.</p>
+      <div class="hero-cta">
+        <a href="#collections" class="btn btn-primary">Shop the Edit</a>
+        <a href="#lookbook" class="btn btn-link">View Lookbook →</a>
+      </div>
+    </div>
+    <div class="scroll-cue">Scroll</div>
+  </section>
+
+  <section class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Hand-Selected</span><span>•</span>
+      <span>Independent Makers</span><span>•</span>
+      <span>Limited Runs</span><span>•</span>
+      <span>Free Shipping over $200</span><span>•</span>
+      <span>Hand-Selected</span><span>•</span>
+      <span>Independent Makers</span><span>•</span>
+      <span>Limited Runs</span><span>•</span>
+      <span>Free Shipping over $200</span><span>•</span>
+    </div>
+  </section>
+
+  <section class="collections" id="collections">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">The Edit</p>
+        <h2>Featured Collections</h2>
+        <p class="section-sub">Pieces we're loving this season — small batches, refined silhouettes, and natural fibres.</p>
+      </div>
+
+      <div class="product-grid">
+        <article class="product-card">
+          <div class="product-image" data-shape="linen-dress"></div>
+          <div class="product-meta">
+            <h3>Linen Slip Dress</h3>
+            <p class="maker">Atelier Sora · Kyoto</p>
+            <p class="price">$248</p>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-image" data-shape="cashmere"></div>
+          <div class="product-meta">
+            <h3>Cashmere Crew</h3>
+            <p class="maker">Norne Studio · Oslo</p>
+            <p class="price">$385</p>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-image" data-shape="tote"></div>
+          <div class="product-meta">
+            <h3>Hand-stitched Tote</h3>
+            <p class="maker">Ofelia Leather · Florence</p>
+            <p class="price">$520</p>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-image" data-shape="ceramic"></div>
+          <div class="product-meta">
+            <h3>Stoneware Vessel</h3>
+            <p class="maker">Hara Ceramics · Lisbon</p>
+            <p class="price">$96</p>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-image" data-shape="silk"></div>
+          <div class="product-meta">
+            <h3>Silk Scarf, Hand-rolled</h3>
+            <p class="maker">Maison Élise</p>
+            <p class="price">$165</p>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-image" data-shape="loafer"></div>
+          <div class="product-meta">
+            <h3>Soft Leather Loafer</h3>
+            <p class="maker">Bertelli · Bologna</p>
+            <p class="price">$420</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="cta-row">
+        <a href="#" class="btn btn-outline">Browse the full edit →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="story" id="about">
+    <div class="container story-grid">
+      <div class="story-image" aria-hidden="true"></div>
+      <div class="story-text">
+        <p class="eyebrow">Our Story</p>
+        <h2>A boutique built on <em>slow</em>.</h2>
+        <p>Maison Élise opened in 2018 as a small atelier on a quiet street, with a single rule: stock only what we'd wear, use, and love ourselves.</p>
+        <p>Today we work with thirty independent designers across Europe, Japan, and the Americas — most of whom we've visited in person. Every garment, every object passes through our hands before it reaches yours.</p>
+        <ul class="values">
+          <li><strong>Considered.</strong> Limited drops, never overstocked.</li>
+          <li><strong>Crafted.</strong> Natural fibres and traditional methods.</li>
+          <li><strong>Personal.</strong> Styling appointments by request.</li>
+        </ul>
+        <a href="#visit" class="btn btn-link">Visit the boutique →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="lookbook" id="lookbook">
+    <div class="container">
+      <div class="section-head center">
+        <p class="eyebrow">SS '26</p>
+        <h2>The Lookbook</h2>
+        <p class="section-sub">Photographed in Provence, March 2026.</p>
+      </div>
+      <div class="lookbook-grid">
+        <div class="look look-1"></div>
+        <div class="look look-2"></div>
+        <div class="look look-3"></div>
+        <div class="look look-4"></div>
+        <div class="look look-5"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="journal" id="journal">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Journal</p>
+        <h2>Notes from the studio</h2>
+      </div>
+      <div class="journal-grid">
+        <article class="post">
+          <div class="post-image post-1"></div>
+          <p class="post-meta">Maker Visit · 6 min read</p>
+          <h3>An afternoon with Atelier Sora</h3>
+          <p>How a tiny indigo studio in Kyoto turns flax into the season's softest layer.</p>
+        </article>
+        <article class="post">
+          <div class="post-image post-2"></div>
+          <p class="post-meta">Style Notes · 3 min read</p>
+          <h3>Five ways to wear a slip dress</h3>
+          <p>From morning markets to evening dinners — the most versatile piece in the SS edit.</p>
+        </article>
+        <article class="post">
+          <div class="post-image post-3"></div>
+          <p class="post-meta">Care Guide · 4 min read</p>
+          <h3>How to care for cashmere</h3>
+          <p>The simple ritual that makes a good knit last a decade.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="visit" id="visit">
+    <div class="container visit-grid">
+      <div class="visit-info">
+        <p class="eyebrow">Visit</p>
+        <h2>Come say hello.</h2>
+        <p>Our boutique sits on a quiet courtyard in the old quarter. Drop in for a coffee, a styling appointment, or simply to look.</p>
+        <dl class="info-list">
+          <div><dt>Address</dt><dd>14 Rue des Tisserands<br />75004 Paris, France</dd></div>
+          <div><dt>Hours</dt><dd>Tue – Sat · 11am to 7pm<br />Sun · 12 to 5pm · Mon closed</dd></div>
+          <div><dt>Contact</dt><dd>hello@maisonelise.co<br />+33 1 42 00 00 00</dd></div>
+        </dl>
+      </div>
+      <form class="newsletter" id="signup">
+        <h3>Letters from the boutique</h3>
+        <p>New arrivals, maker stories, and the occasional invitation. Once a fortnight — never more.</p>
+        <label for="email" class="visually-hidden">Email address</label>
+        <div class="input-row">
+          <input id="email" type="email" required placeholder="your@email.com" autocomplete="email" />
+          <button type="submit" class="btn btn-primary">Subscribe</button>
+        </div>
+        <p class="form-note" id="formNote" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <span class="brand-mark">M</span>
+        <p>Maison Élise — a boutique of small things, made well.</p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#">Women</a></li>
+          <li><a href="#">Accessories</a></li>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Gift cards</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>House</h4>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#journal">Journal</a></li>
+          <li><a href="#visit">Visit</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Service</h4>
+        <ul>
+          <li><a href="#">Shipping & Returns</a></li>
+          <li><a href="#">Care Guide</a></li>
+          <li><a href="#">Stockists</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <small>© 2026 Maison Élise. All rights reserved.</small>
+      <div class="socials">
+        <a href="#" aria-label="Instagram">Instagram</a>
+        <a href="#" aria-label="Pinterest">Pinterest</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
