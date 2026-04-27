@@ -1,6 +1,6 @@
-# Mithila Boutique — Indian Fashion Website
+# Mithila Boutique — Crafts of the Mithila Region
 
-A static, single-page boutique site for an Indian heritage-fashion brand. Cart, INR pricing, and a checkout that runs in demo mode out-of-the-box and plugs into Stripe (or Razorpay) when you add keys.
+A static, single-page boutique site for a fashion & crafts brand rooted in the **Mithila region of Bihar** — Madhubani painting, Sikki grass craft, Sujani embroidery, Bhagalpur tussar silk, Khatwa applique. Cart, INR pricing, and a checkout that runs in demo mode out-of-the-box and plugs into Stripe (or Razorpay) when you add keys.
 
 ## Files
 - `index.html` — markup (storefront, cart drawer, checkout modal, success toast)

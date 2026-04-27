@@ -2,7 +2,7 @@
   "name": "mithila-boutique",
   "version": "1.0.0",
   "private": true,
-  "description": "Mithila Boutique — a static Indian fashion boutique website with cart and checkout",
+  "description": "Mithila Boutique — a static website for a Mithila-region (Bihar) crafts boutique, with cart and checkout",
   "scripts": {
     "start": "serve . -l 8000",
     "dev": "serve . -l 8000"
