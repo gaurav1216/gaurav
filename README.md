@@ -75,7 +75,22 @@ The UI has tabs for PayPal and Apple Pay. To wire them up:
 - Replace gradient placeholders with real photos: set `background-image: url(...)` on `.product-image::before`, `.story-image`, `.look-*`, `.post-*`.
 
 ## Run locally
+
+No build step — it's plain HTML / CSS / JS. Pick one:
+
 ```bash
+# Option A — npm (requires Node)
+npm install
+npm start
+# → http://localhost:8000
+
+# Option B — Python (no install needed)
 python3 -m http.server 8000
-# then open http://localhost:8000
+
+# Option C — one-off via npx
+npx serve . -l 8000
 ```
+
+Then open **http://localhost:8000** in your browser. Use `Ctrl+C` to stop.
+
+Avoid opening `index.html` directly with `file://` — Stripe.js and `localStorage` behave better over `http://`.
