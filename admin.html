@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Mithila Boutique</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f7f4ef; --bg-alt: #efece5; --ink: #1f1d1a; --ink-soft: #57534e;
+      --line: #d9d3c7; --accent: #8a6a4a; --accent-deep: #5d4326;
+      --ok: #2f7d3f; --warn: #b07a1c; --err: #b54646;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 500; margin: 0; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; margin-bottom: 16px; }
+    a { color: inherit; }
+    button { font-family: inherit; cursor: pointer; }
+
+    header {
+      background: var(--ink); color: var(--bg); padding: 18px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    header .brand { display: flex; align-items: center; gap: 12px; font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; }
+    header .brand-mark {
+      width: 32px; height: 32px; border-radius: 50%; background: var(--bg); color: var(--ink);
+      display: grid; place-items: center; font-family: 'Cormorant Garamond', serif;
+    }
+    header .who { font-size: 0.85rem; opacity: 0.7; }
+    header button { background: transparent; color: var(--bg); border: 1px solid rgba(247,244,239,0.3); padding: 6px 14px; border-radius: 999px; font-size: 0.78rem; }
+    header button:hover { border-color: var(--bg); }
+
+    main { max-width: 1200px; margin: 0 auto; padding: 32px; }
+    .login {
+      max-width: 420px; margin: 80px auto; background: #fff; padding: 40px;
+      border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+    }
+    .login h1 { margin-bottom: 8px; }
+    .login p { color: var(--ink-soft); margin: 0 0 24px; font-size: 0.92rem; }
+    .login form { display: grid; gap: 12px; }
+    input, select {
+      width: 100%; padding: 12px 14px; font-family: inherit; font-size: 0.95rem;
+      border: 1px solid var(--line); border-radius: 4px; background: var(--bg);
+    }
+    input:focus, select:focus { outline: none; border-color: var(--ink); }
+    .btn {
+      background: var(--ink); color: var(--bg); border: none;
+      padding: 12px 18px; border-radius: 999px; font-size: 0.85rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .btn:hover { background: var(--accent-deep); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .tabs {
+      display: flex; gap: 4px; margin-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .tab {
+      padding: 12px 20px; background: none; border: none; cursor: pointer;
+      font-size: 0.85rem; letter-spacing: 0.06em; color: var(--ink-soft);
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+    }
+    .tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat { background: #fff; padding: 20px; border-radius: 6px; border: 1px solid var(--line); }
+    .stat .num { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; }
+    .stat .lbl { font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft); }
+
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 6px; overflow: hidden; }
+    th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
+    th { background: var(--bg-alt); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+    tbody tr:hover { background: var(--bg-alt); cursor: pointer; }
+    tr.expanded { background: var(--bg-alt); }
+    .order-detail { display: none; }
+    .order-detail.show { display: table-row; }
+    .order-detail td { padding: 20px 24px; background: #fff; border-bottom: 1px solid var(--line); }
+    .order-detail .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .order-detail h4 { font-family: 'Inter', sans-serif; font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; font-weight: 500; }
+    .order-detail .items { list-style: none; padding: 0; margin: 0; }
+    .order-detail .items li { padding: 6px 0; border-bottom: 1px dotted var(--line); display: flex; justify-content: space-between; }
+
+    .pill {
+      display: inline-block; padding: 3px 10px; border-radius: 999px;
+      font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .pill-pending { background: #fdf3d8; color: #8a6314; }
+    .pill-paid { background: #dcefe1; color: #2f7d3f; }
+    .pill-shipped { background: #d6e4f5; color: #1e4d8b; }
+    .pill-cancelled { background: #f5dada; color: #8a2929; }
+
+    .empty { padding: 60px 20px; text-align: center; color: var(--ink-soft); font-style: italic; background: #fff; border-radius: 6px; }
+    .err { color: var(--err); padding: 12px; background: #fbeaea; border-radius: 4px; margin: 12px 0; font-size: 0.88rem; }
+    .ok { color: var(--ok); padding: 12px; background: #e7f4ea; border-radius: 4px; margin: 12px 0; font-size: 0.88rem; }
+    .config-warn { background: #fdf3d8; color: #8a6314; padding: 16px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; }
+    .config-warn code { background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 3px; }
+
+    @media (max-width: 720px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .order-detail .grid { grid-template-columns: 1fr; }
+      table { font-size: 0.82rem; }
+      th, td { padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="brand-mark">M</span>
+      <span>Mithila Boutique · Admin</span>
+    </div>
+    <div id="userBox" hidden>
+      <span class="who" id="userEmail"></span>
+      <button id="logoutBtn">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Login -->
+    <section class="login" id="loginView">
+      <h1>Sign in</h1>
+      <p>We'll email you a sign-in link. Only addresses listed in <code>admin_emails</code> can access this page.</p>
+      <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="you@example.com" required autocomplete="email" />
+        <button type="submit" class="btn" id="loginBtn">Send magic link</button>
+      </form>
+      <div id="loginMsg"></div>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="dashboard" hidden>
+      <div class="tabs">
+        <button class="tab active" data-tab="orders">Orders</button>
+        <button class="tab" data-tab="subscribers">Subscribers</button>
+        <button class="tab" data-tab="products">Products</button>
+      </div>
+
+      <!-- Orders -->
+      <div class="panel active" data-panel="orders">
+        <div class="stats" id="orderStats"></div>
+        <h2>Recent orders</h2>
+        <div id="ordersWrap"></div>
+      </div>
+
+      <!-- Subscribers -->
+      <div class="panel" data-panel="subscribers">
+        <h2>Newsletter subscribers</h2>
+        <div id="subsWrap"></div>
+      </div>
+
+      <!-- Products -->
+      <div class="panel" data-panel="products">
+        <h2>Products</h2>
+        <div id="productsWrap"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Read the same Supabase config used by script.js — keep them in sync.
+    const SUPABASE_URL = '';
+    const SUPABASE_ANON_KEY = '';
+
+    const $ = (sel) => document.querySelector(sel);
+    const fmt = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      $('#loginView').innerHTML = `
+        <h1>Setup needed</h1>
+        <div class="config-warn">
+          Set <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> at the top of
+          <code>admin.html</code> (use the same values as <code>script.js</code>).
+        </div>
+      `;
+      throw new Error('Supabase not configured');
+    }
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ─────────── Auth ───────────
+    sb.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) showDashboard(session.user);
+      else showLogin();
+    });
+
+    sb.auth.getSession().then(({ data }) => {
+      if (data.session?.user) showDashboard(data.session.user);
+    });
+
+    $('#loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = $('#loginEmail').value.trim();
+      const btn = $('#loginBtn');
+      const msg = $('#loginMsg');
+      btn.disabled = true; btn.textContent = 'Sending…';
+      const { error } = await sb.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.href },
+      });
+      btn.disabled = false; btn.textContent = 'Send magic link';
+      if (error) msg.innerHTML = `<div class="err">${error.message}</div>`;
+      else msg.innerHTML = `<div class="ok">Check your inbox for the sign-in link.</div>`;
+    });
+
+    $('#logoutBtn').addEventListener('click', async () => {
+      await sb.auth.signOut();
+    });
+
+    function showLogin() {
+      $('#loginView').hidden = false;
+      $('#dashboard').hidden = true;
+      $('#userBox').hidden = true;
+    }
+
+    async function showDashboard(user) {
+      $('#loginView').hidden = true;
+      $('#dashboard').hidden = false;
+      $('#userBox').hidden = false;
+      $('#userEmail').textContent = user.email;
+      await Promise.all([loadOrders(), loadSubs(), loadProducts()]);
+    }
+
+    // ─────────── Tabs ───────────
+    document.querySelectorAll('.tab').forEach((t) => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach((x) => x.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach((x) => x.classList.remove('active'));
+        t.classList.add('active');
+        document.querySelector(`.panel[data-panel="${t.dataset.tab}"]`).classList.add('active');
+      });
+    });
+
+    // ─────────── Orders ───────────
+    async function loadOrders() {
+      const wrap = $('#ordersWrap');
+      const { data, error } = await sb
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (error) { wrap.innerHTML = `<div class="err">${error.message}</div>`; return; }
+      if (!data?.length) { wrap.innerHTML = '<div class="empty">No orders yet.</div>'; renderStats([]); return; }
+
+      renderStats(data);
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.map((o) => orderRow(o)).join('')}
+          </tbody>
+        </table>
+      `;
+
+      // Row toggle
+      wrap.querySelectorAll('tr.order').forEach((row) => {
+        row.addEventListener('click', (e) => {
+          if (e.target.tagName === 'SELECT') return;
+          const detail = row.nextElementSibling;
+          row.classList.toggle('expanded');
+          detail.classList.toggle('show');
+        });
+      });
+
+      // Status change
+      wrap.querySelectorAll('select.status').forEach((sel) => {
+        sel.addEventListener('change', async () => {
+          const id = sel.dataset.id;
+          const { error } = await sb.from('orders').update({ status: sel.value }).eq('id', id);
+          if (error) { alert(error.message); return; }
+          const row = sel.closest('tr');
+          row.querySelector('.pill').className = 'pill pill-' + sel.value;
+          row.querySelector('.pill').textContent = sel.value;
+        });
+      });
+    }
+
+    function orderRow(o) {
+      const itemCount = o.items.reduce((s, i) => s + i.qty, 0);
+      const date = new Date(o.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+      return `
+        <tr class="order">
+          <td>${date}</td>
+          <td>${esc(o.first_name)} ${esc(o.last_name)}<br /><small style="color:var(--ink-soft)">${esc(o.email)}</small></td>
+          <td>${itemCount} item${itemCount === 1 ? '' : 's'}</td>
+          <td>${fmt(o.total_inr)}</td>
+          <td>
+            <span class="pill pill-${o.status}">${o.status}</span>
+            <select class="status" data-id="${o.id}" style="margin-left:8px; padding: 4px 8px; font-size: 0.78rem;">
+              <option ${o.status === 'pending' ? 'selected' : ''}>pending</option>
+              <option ${o.status === 'paid' ? 'selected' : ''}>paid</option>
+              <option ${o.status === 'shipped' ? 'selected' : ''}>shipped</option>
+              <option ${o.status === 'cancelled' ? 'selected' : ''}>cancelled</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="order-detail">
+          <td colspan="5">
+            <div class="grid">
+              <div>
+                <h4>Items</h4>
+                <ul class="items">
+                  ${o.items.map((i) => `<li><span>${esc(i.name)} × ${i.qty}</span><span>${fmt(i.price * i.qty)}</span></li>`).join('')}
+                </ul>
+                <ul class="items" style="margin-top:8px;">
+                  <li><span>Subtotal</span><span>${fmt(o.subtotal_inr)}</span></li>
+                  <li><span>Shipping</span><span>${o.shipping_inr === 0 ? 'Free' : fmt(o.shipping_inr)}</span></li>
+                  <li><span>Tax</span><span>${fmt(o.tax_inr)}</span></li>
+                  <li style="font-weight:600;"><span>Total</span><span>${fmt(o.total_inr)}</span></li>
+                </ul>
+              </div>
+              <div>
+                <h4>Ship to</h4>
+                <p style="margin: 0 0 16px; line-height: 1.6;">
+                  ${esc(o.first_name)} ${esc(o.last_name)}<br />
+                  ${esc(o.address)}<br />
+                  ${esc(o.city)} ${esc(o.postal)}<br />
+                  ${esc(o.country)}
+                </p>
+                <h4>Payment</h4>
+                <p style="margin:0;">${esc(o.payment_method || '—')} ${o.payment_id ? `· <code style="font-size:0.78rem;">${esc(o.payment_id)}</code>` : ''}</p>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderStats(orders) {
+      const today = new Date().toDateString();
+      const todays = orders.filter((o) => new Date(o.created_at).toDateString() === today);
+      const pending = orders.filter((o) => o.status === 'pending').length;
+      const revenue = orders.filter((o) => o.status !== 'cancelled').reduce((s, o) => s + o.total_inr, 0);
+      $('#orderStats').innerHTML = `
+        <div class="stat"><div class="num">${orders.length}</div><div class="lbl">Total orders</div></div>
+        <div class="stat"><div class="num">${todays.length}</div><div class="lbl">Today</div></div>
+        <div class="stat"><div class="num">${pending}</div><div class="lbl">Pending</div></div>
+        <div class="stat"><div class="num">${fmt(revenue)}</div><div class="lbl">Revenue</div></div>
+      `;
+    }
+
+    // ─────────── Subscribers ───────────
+    async function loadSubs() {
+      const { data, error } = await sb
+        .from('newsletter_signups')
+        .select('*')
+        .order('created_at', { ascending: false });
+      const wrap = $('#subsWrap');
+      if (error) { wrap.innerHTML = `<div class="err">${error.message}</div>`; return; }
+      if (!data?.length) { wrap.innerHTML = '<div class="empty">No subscribers yet.</div>'; return; }
+      wrap.innerHTML = `
+        <table>
+          <thead><tr><th>Email</th><th>Subscribed</th></tr></thead>
+          <tbody>
+            ${data.map((s) => `<tr><td>${esc(s.email)}</td><td>${new Date(s.created_at).toLocaleDateString('en-IN', { dateStyle: 'medium' })}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    // ─────────── Products ───────────
+    async function loadProducts() {
+      const { data, error } = await sb
+        .from('products')
+        .select('*')
+        .order('display_order');
+      const wrap = $('#productsWrap');
+      if (error) { wrap.innerHTML = `<div class="err">${error.message}</div>`; return; }
+      if (!data?.length) { wrap.innerHTML = '<div class="empty">No products. Run db/seed.sql.</div>'; return; }
+      wrap.innerHTML = `
+        <table>
+          <thead><tr><th>Name</th><th>Maker</th><th>Price</th><th>Stock</th></tr></thead>
+          <tbody>
+            ${data.map((p) => `
+              <tr>
+                <td>${esc(p.name)}</td>
+                <td>${esc(p.maker)}</td>
+                <td>
+                  <input type="number" class="price-edit" data-id="${p.id}" value="${p.price_inr}" style="width:100px; padding:6px 8px;" />
+                </td>
+                <td>
+                  <select class="stock-edit" data-id="${p.id}" style="padding:6px 8px;">
+                    <option value="true" ${p.in_stock ? 'selected' : ''}>In stock</option>
+                    <option value="false" ${!p.in_stock ? 'selected' : ''}>Sold out</option>
+                  </select>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      wrap.querySelectorAll('.price-edit').forEach((inp) => {
+        inp.addEventListener('change', async () => {
+          await sb.from('products').update({ price_inr: Number(inp.value) }).eq('id', inp.dataset.id);
+        });
+      });
+      wrap.querySelectorAll('.stock-edit').forEach((sel) => {
+        sel.addEventListener('change', async () => {
+          await sb.from('products').update({ in_stock: sel.value === 'true' }).eq('id', sel.dataset.id);
+        });
+      });
+    }
+
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+  </script>
+</body>
+</html>

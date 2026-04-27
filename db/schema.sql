@@ -75,3 +75,41 @@ create policy "anyone can place an order"
 drop policy if exists "anyone can subscribe" on newsletter_signups;
 create policy "anyone can subscribe"
   on newsletter_signups for insert with check (true);
+
+-- ─────────────────────────────────────────────
+-- Admin access
+-- The admin page (admin.html) signs in via Supabase email magic link.
+-- Only emails listed in the admin_emails table can read orders or
+-- newsletter subscribers, or update order status.
+--
+-- After running this file, add yourself:
+--   insert into admin_emails (email) values ('you@example.com');
+-- ─────────────────────────────────────────────
+create table if not exists admin_emails (
+  email      text primary key,
+  added_at   timestamptz default now()
+);
+
+alter table admin_emails enable row level security;
+-- No public policies — only the service-role key can read this table.
+
+drop policy if exists "admins read orders" on orders;
+create policy "admins read orders"
+  on orders for select
+  using ((auth.jwt() ->> 'email') in (select email from admin_emails));
+
+drop policy if exists "admins update orders" on orders;
+create policy "admins update orders"
+  on orders for update
+  using ((auth.jwt() ->> 'email') in (select email from admin_emails));
+
+drop policy if exists "admins read subscribers" on newsletter_signups;
+create policy "admins read subscribers"
+  on newsletter_signups for select
+  using ((auth.jwt() ->> 'email') in (select email from admin_emails));
+
+drop policy if exists "admins write products" on products;
+create policy "admins write products"
+  on products for all
+  using ((auth.jwt() ->> 'email') in (select email from admin_emails))
+  with check ((auth.jwt() ->> 'email') in (select email from admin_emails));

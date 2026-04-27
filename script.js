@@ -356,9 +356,8 @@ checkoutForm.addEventListener('submit', async (e) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: Math.round(cart.total() * 100),
-          currency: CURRENCY.toLowerCase(),
-          items: cart.items,
+          items: cart.items.map((i) => ({ id: i.id, qty: i.qty })),
+          email: formData.get('email'),
         }),
       });
       const { clientSecret, error } = await res.json();

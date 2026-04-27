@@ -3,11 +3,13 @@
 A static, single-page boutique site for a fashion & crafts brand rooted in the **Mithila region of Bihar** — Madhubani painting, Sikki grass craft, Sujani embroidery, Bhagalpur tussar silk, Khatwa applique. Cart, INR pricing, and a checkout that runs in demo mode out-of-the-box and plugs into Stripe (or Razorpay) when you add keys.
 
 ## Files
-- `index.html` — markup (storefront, cart drawer, checkout modal, success toast)
-- `styles.css` — styles (responsive, mobile-first breakpoints at 960px / 560px)
-- `script.js` — cart, drawer + modal, Stripe + Supabase integration, demo mode
-- `db/schema.sql` — Supabase tables and Row-Level Security policies
+- `index.html` — storefront (cart drawer, checkout modal, success toast)
+- `admin.html` — admin dashboard (orders, subscribers, product editor)
+- `styles.css` — storefront styles (responsive, breakpoints at 960px / 560px)
+- `script.js` — cart, modal, Stripe + Supabase integration
+- `db/schema.sql` — Supabase tables, RLS policies, admin allowlist
 - `db/seed.sql` — initial product catalogue
+- `supabase/functions/create-payment-intent/` — Stripe Edge Function
 
 ## Sections
 1. Sticky header with cart counter
@@ -41,11 +43,30 @@ Once configured, the site will:
 
 | Table | Written by | Read by |
 |---|---|---|
-| `products` | Admin (you, in Supabase dashboard) | Public storefront |
-| `orders` | Customer at checkout (anon insert) | You via the dashboard |
-| `newsletter_signups` | Newsletter form | You via the dashboard |
+| `products` | Admin via `admin.html` (or Supabase dashboard) | Public storefront |
+| `orders` | Customer at checkout (anon insert) | Admin via `admin.html` |
+| `newsletter_signups` | Newsletter form | Admin via `admin.html` |
+| `admin_emails` | You, in the Supabase SQL editor | Used internally by RLS policies |
 
-Row-Level Security is enabled on all three. Customers can place orders but can never read other people's orders. Admin views should use the **service-role key** from a backend, never in the browser.
+Row-Level Security is enabled on all four. Customers can place orders but can never read other people's. Admins are authenticated via Supabase Auth (email magic link) and read access is gated on the `admin_emails` allowlist.
+
+## Admin dashboard
+
+`admin.html` is a self-contained admin tool. Open it on the same domain as the storefront.
+
+Setup:
+
+1. Add yourself to the admin allowlist in the Supabase SQL editor:
+   ```sql
+   insert into admin_emails (email) values ('you@example.com');
+   ```
+2. Open `admin.html` in your browser → enter your email → click the magic link Supabase sends you.
+3. You'll see:
+   - **Orders** — recent orders with stats, expandable rows for items + shipping + payment ID, dropdown to update status (pending → paid → shipped → cancelled)
+   - **Subscribers** — newsletter signups
+   - **Products** — inline edit price and toggle in-stock / sold-out
+
+Make sure the `SUPABASE_URL` and `SUPABASE_ANON_KEY` constants at the top of `admin.html` match the ones in `script.js`.
 
 ### Adding photos to products
 
@@ -55,35 +76,30 @@ The `products` table has an optional `image_url` column. Upload an image to Supa
 
 The site ships in **demo mode** — the cart and checkout are fully functional, payment fields accept any input, and the success state plays through. No real charges are made.
 
-### Going live with Stripe
+### Going live with Stripe (via Supabase Edge Function)
 
-Stripe requires a small server-side step to create a `PaymentIntent` (the browser is never allowed to do this). Open `script.js` and fill in:
+Stripe requires a small server-side step to create a `PaymentIntent` (the browser is never allowed to do this). The repo includes a ready-to-deploy Edge Function at `supabase/functions/create-payment-intent/` that runs on Supabase — no separate backend needed.
 
-```js
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_...';   // your Stripe publishable key
-const CHECKOUT_ENDPOINT = '/api/create-payment-intent'; // your backend URL
+**Critically, the function recomputes the order total server-side from the `products` table** — it never trusts the amount the browser sends. This prevents tampered prices.
+
+Deploy with the [Supabase CLI](https://supabase.com/docs/guides/cli):
+
+```bash
+# one-time
+supabase login
+supabase link --project-ref <your-project-ref>
+
+# deploy and set the Stripe secret key
+supabase functions deploy create-payment-intent
+supabase secrets set STRIPE_SECRET_KEY=sk_test_...
 ```
 
-The endpoint should accept `{ amount, currency, items }` and return `{ clientSecret }`. A minimal Node/Express handler:
+Then fill in `script.js`:
 
 ```js
-// server.js
-import express from 'express';
-import Stripe from 'stripe';
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const app = express();
-app.use(express.json());
-
-app.post('/api/create-payment-intent', async (req, res) => {
-  const { amount, currency } = req.body;
-  const intent = await stripe.paymentIntents.create({ amount, currency, automatic_payment_methods: { enabled: true } });
-  res.json({ clientSecret: intent.client_secret });
-});
-
-app.listen(3000);
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_...';
+const CHECKOUT_ENDPOINT = 'https://<project>.supabase.co/functions/v1/create-payment-intent';
 ```
-
-Or deploy as a serverless function on Vercel / Netlify / Cloudflare Workers — same shape.
 
 Other tunables at the top of `script.js`:
 
