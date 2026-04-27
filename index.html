@@ -26,12 +26,12 @@
       </ul>
       <div class="nav-actions">
         <a href="#visit" class="btn btn-ghost">Book Appointment</a>
-        <button class="icon-btn" aria-label="Cart">
+        <button class="icon-btn" aria-label="Cart" id="cartBtn">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M3 6h18l-2 12H5L3 6z" />
             <path d="M8 6V4a4 4 0 018 0v2" />
           </svg>
-          <span class="cart-count">0</span>
+          <span class="cart-count" id="cartCount">0</span>
         </button>
       </div>
       <button class="menu-toggle" aria-label="Menu" id="menuToggle">
@@ -75,9 +75,11 @@
         <p class="section-sub">Pieces we're loving this season — small batches, refined silhouettes, and natural fibres.</p>
       </div>
 
-      <div class="product-grid">
-        <article class="product-card">
-          <div class="product-image" data-shape="linen-dress"></div>
+      <div class="product-grid" id="productGrid">
+        <article class="product-card" data-id="p-linen-dress" data-name="Linen Slip Dress" data-price="248">
+          <div class="product-image" data-shape="linen-dress">
+            <button class="add-btn" type="button">Add to bag</button>
+          </div>
           <div class="product-meta">
             <h3>Linen Slip Dress</h3>
             <p class="maker">Atelier Sora · Kyoto</p>
@@ -85,8 +87,10 @@
           </div>
         </article>
 
-        <article class="product-card">
-          <div class="product-image" data-shape="cashmere"></div>
+        <article class="product-card" data-id="p-cashmere" data-name="Cashmere Crew" data-price="385">
+          <div class="product-image" data-shape="cashmere">
+            <button class="add-btn" type="button">Add to bag</button>
+          </div>
           <div class="product-meta">
             <h3>Cashmere Crew</h3>
             <p class="maker">Norne Studio · Oslo</p>
@@ -94,8 +98,10 @@
           </div>
         </article>
 
-        <article class="product-card">
-          <div class="product-image" data-shape="tote"></div>
+        <article class="product-card" data-id="p-tote" data-name="Hand-stitched Tote" data-price="520">
+          <div class="product-image" data-shape="tote">
+            <button class="add-btn" type="button">Add to bag</button>
+          </div>
           <div class="product-meta">
             <h3>Hand-stitched Tote</h3>
             <p class="maker">Ofelia Leather · Florence</p>
@@ -103,8 +109,10 @@
           </div>
         </article>
 
-        <article class="product-card">
-          <div class="product-image" data-shape="ceramic"></div>
+        <article class="product-card" data-id="p-ceramic" data-name="Stoneware Vessel" data-price="96">
+          <div class="product-image" data-shape="ceramic">
+            <button class="add-btn" type="button">Add to bag</button>
+          </div>
           <div class="product-meta">
             <h3>Stoneware Vessel</h3>
             <p class="maker">Hara Ceramics · Lisbon</p>
@@ -112,8 +120,10 @@
           </div>
         </article>
 
-        <article class="product-card">
-          <div class="product-image" data-shape="silk"></div>
+        <article class="product-card" data-id="p-silk" data-name="Silk Scarf, Hand-rolled" data-price="165">
+          <div class="product-image" data-shape="silk">
+            <button class="add-btn" type="button">Add to bag</button>
+          </div>
           <div class="product-meta">
             <h3>Silk Scarf, Hand-rolled</h3>
             <p class="maker">Maison Élise</p>
@@ -121,8 +131,10 @@
           </div>
         </article>
 
-        <article class="product-card">
-          <div class="product-image" data-shape="loafer"></div>
+        <article class="product-card" data-id="p-loafer" data-name="Soft Leather Loafer" data-price="420">
+          <div class="product-image" data-shape="loafer">
+            <button class="add-btn" type="button">Add to bag</button>
+          </div>
           <div class="product-meta">
             <h3>Soft Leather Loafer</h3>
             <p class="maker">Bertelli · Bologna</p>
@@ -269,6 +281,131 @@
     </div>
   </footer>
 
+  <!-- ───── Cart Drawer ───── -->
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-label="Shopping bag">
+    <header class="drawer-head">
+      <h3>Your bag</h3>
+      <button class="icon-close" id="closeCart" aria-label="Close">×</button>
+    </header>
+    <div class="drawer-body" id="cartItems">
+      <p class="cart-empty">Your bag is empty.</p>
+    </div>
+    <footer class="drawer-foot" id="cartFoot" hidden>
+      <div class="totals">
+        <div><span>Subtotal</span><span id="cartSubtotal">$0</span></div>
+        <div class="muted"><span>Shipping</span><span>Calculated at checkout</span></div>
+      </div>
+      <button class="btn btn-primary btn-block" id="checkoutBtn">Checkout</button>
+      <p class="secure-note">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1l9 4v6c0 5-3.8 9.7-9 11-5.2-1.3-9-6-9-11V5l9-4z"/></svg>
+        Secure checkout · 256-bit SSL
+      </p>
+    </footer>
+  </aside>
+
+  <!-- ───── Checkout Modal ───── -->
+  <div class="modal" id="checkoutModal" aria-hidden="true" role="dialog" aria-label="Checkout">
+    <div class="modal-card">
+      <button class="icon-close modal-close" id="closeCheckout" aria-label="Close">×</button>
+      <div class="modal-grid">
+        <section class="checkout-form">
+          <h2>Checkout</h2>
+          <form id="checkoutForm" novalidate>
+            <fieldset>
+              <legend>Contact</legend>
+              <label>Email
+                <input type="email" name="email" required autocomplete="email" placeholder="you@example.com" />
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Shipping</legend>
+              <div class="row">
+                <label>First name<input name="firstName" required autocomplete="given-name" /></label>
+                <label>Last name<input name="lastName" required autocomplete="family-name" /></label>
+              </div>
+              <label>Address<input name="address" required autocomplete="street-address" /></label>
+              <div class="row">
+                <label>City<input name="city" required autocomplete="address-level2" /></label>
+                <label>Postal code<input name="postal" required autocomplete="postal-code" /></label>
+              </div>
+              <label>Country
+                <select name="country" required autocomplete="country">
+                  <option value="">Select country</option>
+                  <option>France</option>
+                  <option>United Kingdom</option>
+                  <option>United States</option>
+                  <option>Germany</option>
+                  <option>Italy</option>
+                  <option>Spain</option>
+                  <option>Japan</option>
+                  <option>Other</option>
+                </select>
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Payment</legend>
+              <div class="pay-tabs" role="tablist">
+                <button type="button" class="pay-tab active" data-method="card" role="tab">Card</button>
+                <button type="button" class="pay-tab" data-method="paypal" role="tab">PayPal</button>
+                <button type="button" class="pay-tab" data-method="apple" role="tab">Apple Pay</button>
+              </div>
+
+              <div class="pay-panel" data-panel="card">
+                <!-- Stripe Elements mounts here when configured; otherwise demo inputs render -->
+                <div id="card-element" class="card-element"></div>
+                <div id="card-errors" class="field-error" role="alert"></div>
+              </div>
+
+              <div class="pay-panel" data-panel="paypal" hidden>
+                <p class="muted">You'll be redirected to PayPal to complete your purchase.</p>
+              </div>
+
+              <div class="pay-panel" data-panel="apple" hidden>
+                <p class="muted">Apple Pay is available on supported devices in Safari.</p>
+              </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary btn-block btn-pay" id="payBtn">
+              <span class="pay-label">Pay <span id="payTotal">$0</span></span>
+              <span class="spinner" hidden></span>
+            </button>
+            <p class="legal-note">By placing this order you agree to our Terms and Privacy Policy.</p>
+          </form>
+        </section>
+
+        <aside class="order-summary">
+          <h3>Order summary</h3>
+          <ul id="summaryItems"></ul>
+          <dl class="summary-totals">
+            <div><dt>Subtotal</dt><dd id="sumSubtotal">$0</dd></div>
+            <div><dt>Shipping</dt><dd id="sumShipping">Free</dd></div>
+            <div><dt>Tax (estimated)</dt><dd id="sumTax">$0</dd></div>
+            <div class="grand"><dt>Total</dt><dd id="sumTotal">$0</dd></div>
+          </dl>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── Success Toast ───── -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden>
+    <div class="toast-card">
+      <div class="check">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <h3>Thank you</h3>
+      <p id="toastMsg">Your order has been placed. A confirmation has been sent to your email.</p>
+      <button class="btn btn-outline" id="toastClose">Continue shopping</button>
+    </div>
+  </div>
+
+  <script src="https://js.stripe.com/v3/"></script>
   <script src="script.js"></script>
 </body>
 </html>

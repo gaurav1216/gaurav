@@ -1,27 +1,78 @@
 # Maison Élise — Boutique Website
 
-A static, single-page boutique website. No build step — open `index.html` in a browser, or serve the folder with any static server.
+A static, single-page boutique website with cart and Stripe checkout. No build step — open `index.html` in a browser, or serve the folder with any static server.
 
 ## Files
-- `index.html` — markup
+- `index.html` — markup (storefront, cart drawer, checkout modal, success toast)
 - `styles.css` — styles (responsive, mobile-first breakpoints at 960px / 560px)
-- `script.js` — reveal-on-scroll, mobile menu, newsletter form, cart-count demo, hero parallax
+- `script.js` — cart state (localStorage), drawer + modal, Stripe integration, demo mode
 
 ## Sections
-1. Sticky header with cart
+1. Sticky header with cart counter
 2. Hero with editorial type
 3. Marquee strip
-4. Featured collections (6 products)
+4. Featured collections (6 products) with **Add to bag**
 5. Brand story
 6. Lookbook grid
-7. Journal (3 posts)
-8. Visit info + newsletter signup
+7. Journal
+8. Visit info + newsletter
 9. Footer
+10. Slide-out cart drawer
+11. Two-column checkout modal (form + order summary)
+
+## Payments
+
+The site ships in **demo mode** — the cart and checkout are fully functional, payment fields accept any input, and the success state plays through. No real charges are made.
+
+### Going live with Stripe
+
+Stripe requires a small server-side step to create a `PaymentIntent` (the browser is never allowed to do this). Open `script.js` and fill in:
+
+```js
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_...';   // your Stripe publishable key
+const CHECKOUT_ENDPOINT = '/api/create-payment-intent'; // your backend URL
+```
+
+The endpoint should accept `{ amount, currency, items }` and return `{ clientSecret }`. A minimal Node/Express handler:
+
+```js
+// server.js
+import express from 'express';
+import Stripe from 'stripe';
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const app = express();
+app.use(express.json());
+
+app.post('/api/create-payment-intent', async (req, res) => {
+  const { amount, currency } = req.body;
+  const intent = await stripe.paymentIntents.create({ amount, currency, automatic_payment_methods: { enabled: true } });
+  res.json({ clientSecret: intent.client_secret });
+});
+
+app.listen(3000);
+```
+
+Or deploy as a serverless function on Vercel / Netlify / Cloudflare Workers — same shape.
+
+Other tunables at the top of `script.js`:
+
+| Constant | Default | Purpose |
+|---|---|---|
+| `CURRENCY` / `CURRENCY_SYMBOL` | `USD` / `$` | Display + Stripe currency |
+| `TAX_RATE` | `0.08` | Estimated tax shown on summary |
+| `FREE_SHIPPING_THRESHOLD` | `200` | Free shipping over this subtotal |
+| `SHIPPING_FEE` | `18` | Flat shipping fee otherwise |
+
+### PayPal / Apple Pay
+
+The UI has tabs for PayPal and Apple Pay. To wire them up:
+- **PayPal**: drop in PayPal's [Smart Buttons SDK](https://developer.paypal.com/sdk/js/) inside the `[data-panel="paypal"]` block.
+- **Apple Pay**: enable the [Payment Request Button Element](https://docs.stripe.com/elements/payment-request-button) via Stripe — works automatically on supported devices once Stripe is configured.
 
 ## Customise
-- Brand name, copy, prices: `index.html`
+- Brand name, copy, products: `index.html`
 - Colour palette: `:root` tokens at the top of `styles.css`
-- Replace gradient placeholders with real photography by setting `background-image: url(...)` on `.product-image::before`, `.story-image`, `.look-*`, `.post-*`.
+- Replace gradient placeholders with real photos: set `background-image: url(...)` on `.product-image::before`, `.story-image`, `.look-*`, `.post-*`.
 
 ## Run locally
 ```bash
