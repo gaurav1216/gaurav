@@ -21,6 +21,20 @@ const TAX_RATE = 0.05; // GST on apparel < ₹1000 is 5%, ≥ ₹1000 is 12%. Ke
 const FREE_SHIPPING_THRESHOLD = 2500;
 const SHIPPING_FEE = 150;
 
+// ─────────── Supabase (database) ───────────
+// To use a real database (recommended):
+//   1. Create a project at https://supabase.com
+//   2. Run db/schema.sql then db/seed.sql in the SQL editor
+//   3. Paste your project URL and anon key below
+// Without these set, the site falls back to the hardcoded products
+// in index.html and orders simply show the success toast.
+const SUPABASE_URL = '';
+const SUPABASE_ANON_KEY = '';
+
+const sb = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
 const fmt = (n) => `${CURRENCY_SYMBOL}${Math.round(n).toLocaleString('en-IN')}`;
 
 /* ─────────── Reveal-on-scroll ─────────── */
@@ -43,10 +57,18 @@ document.querySelectorAll('.nav-links a').forEach((a) =>
 /* ─────────── Newsletter ─────────── */
 const signup = document.getElementById('signup');
 const formNote = document.getElementById('formNote');
-signup?.addEventListener('submit', (e) => {
+signup?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('email').value.trim();
   if (!/^\S+@\S+\.\S+$/.test(email)) { formNote.textContent = 'Please enter a valid email.'; return; }
+
+  if (sb) {
+    const { error } = await sb.from('newsletter_signups').insert({ email });
+    if (error && !/duplicate|unique/i.test(error.message)) {
+      formNote.textContent = 'Could not subscribe right now. Please try again.';
+      return;
+    }
+  }
   formNote.textContent = 'Thank you — check your inbox to confirm.';
   signup.reset();
 });
@@ -111,20 +133,47 @@ const checkoutForm = document.getElementById('checkoutForm');
 const payBtn = document.getElementById('payBtn');
 const toast = document.getElementById('toast');
 
-/* ─────────── Add to bag ─────────── */
-document.querySelectorAll('.product-card').forEach((card) => {
-  const product = {
+/* ─────────── Add to bag (delegated, works for DB-loaded products) ─────────── */
+document.getElementById('productGrid').addEventListener('click', (e) => {
+  const btn = e.target.closest('.add-btn');
+  if (!btn) return;
+  e.stopPropagation();
+  const card = btn.closest('.product-card');
+  if (!card) return;
+  cart.add({
     id: card.dataset.id,
     name: card.dataset.name,
     price: Number(card.dataset.price),
-  };
-  card.querySelector('.add-btn').addEventListener('click', (e) => {
-    e.stopPropagation();
-    cart.add(product);
-    openDrawer();
-    pulse(cartCountEl);
   });
+  openDrawer();
+  pulse(cartCountEl);
 });
+
+/* ─────────── Load products from Supabase (if configured) ─────────── */
+async function loadProductsFromDB() {
+  if (!sb) return;
+  const { data, error } = await sb
+    .from('products')
+    .select('id, name, maker, price_inr, shape, image_url')
+    .eq('in_stock', true)
+    .order('display_order', { ascending: true });
+
+  if (error) { console.warn('Supabase products fetch failed:', error.message); return; }
+  if (!data?.length) return;
+
+  document.getElementById('productGrid').innerHTML = data.map((p) => `
+    <article class="product-card" data-id="${p.id}" data-name="${escapeHtml(p.name)}" data-price="${p.price_inr}">
+      <div class="product-image" data-shape="${p.shape}" ${p.image_url ? `style="background-image:url('${p.image_url}'); background-size:cover; background-position:center;"` : ''}>
+        <button class="add-btn" type="button">Add to bag</button>
+      </div>
+      <div class="product-meta">
+        <h3>${escapeHtml(p.name)}</h3>
+        <p class="maker">${escapeHtml(p.maker)}</p>
+        <p class="price">₹${p.price_inr.toLocaleString('en-IN')}</p>
+      </div>
+    </article>
+  `).join('');
+}
 
 function pulse(el) {
   el.animate(
@@ -297,6 +346,9 @@ checkoutForm.addEventListener('submit', async (e) => {
   if (!validateForm()) return;
   setLoading(true);
 
+  const formData = new FormData(checkoutForm);
+  let paymentId = null;
+
   try {
     if (activeMethod === 'card' && stripe && cardElement && CHECKOUT_ENDPOINT) {
       // Real Stripe path
@@ -312,8 +364,7 @@ checkoutForm.addEventListener('submit', async (e) => {
       const { clientSecret, error } = await res.json();
       if (error) throw new Error(error);
 
-      const formData = new FormData(checkoutForm);
-      const { error: confirmError } = await stripe.confirmCardPayment(clientSecret, {
+      const confirmed = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: cardElement,
           billing_details: {
@@ -328,18 +379,41 @@ checkoutForm.addEventListener('submit', async (e) => {
           },
         },
       });
-      if (confirmError) throw new Error(confirmError.message);
+      if (confirmed.error) throw new Error(confirmed.error.message);
+      paymentId = confirmed.paymentIntent?.id || null;
     } else {
-      // Demo mode — pretend to process
       await new Promise((r) => setTimeout(r, 1200));
     }
 
+    await saveOrder(formData, paymentId);
     onPaymentSuccess();
   } catch (err) {
     cardErrors.textContent = err.message || 'Something went wrong. Please try again.';
     setLoading(false);
   }
 });
+
+async function saveOrder(formData, paymentId) {
+  if (!sb) return;
+  const { error } = await sb.from('orders').insert({
+    email: formData.get('email'),
+    first_name: formData.get('firstName'),
+    last_name: formData.get('lastName'),
+    address: formData.get('address'),
+    city: formData.get('city'),
+    postal: formData.get('postal'),
+    country: formData.get('country'),
+    items: cart.items,
+    subtotal_inr: cart.subtotal(),
+    shipping_inr: cart.shipping(),
+    tax_inr: cart.tax(),
+    total_inr: cart.total(),
+    payment_method: paymentId ? activeMethod : 'demo',
+    payment_id: paymentId,
+    status: paymentId ? 'paid' : 'pending',
+  });
+  if (error) console.warn('Order save failed:', error.message);
+}
 
 function validateForm() {
   let valid = true;
@@ -374,3 +448,4 @@ document.getElementById('toastClose').addEventListener('click', () => { toast.hi
 
 /* ─────────── Initial render ─────────── */
 render();
+loadProductsFromDB();

@@ -5,7 +5,9 @@ A static, single-page boutique site for a fashion & crafts brand rooted in the *
 ## Files
 - `index.html` — markup (storefront, cart drawer, checkout modal, success toast)
 - `styles.css` — styles (responsive, mobile-first breakpoints at 960px / 560px)
-- `script.js` — cart state (localStorage), drawer + modal, Stripe integration, demo mode
+- `script.js` — cart, drawer + modal, Stripe + Supabase integration, demo mode
+- `db/schema.sql` — Supabase tables and Row-Level Security policies
+- `db/seed.sql` — initial product catalogue
 
 ## Sections
 1. Sticky header with cart counter
@@ -19,6 +21,35 @@ A static, single-page boutique site for a fashion & crafts brand rooted in the *
 9. Footer
 10. Slide-out cart drawer
 11. Two-column checkout modal (form + order summary)
+
+## Database (Supabase)
+
+The site runs fine with no database — products are hardcoded in `index.html` and orders just show the success toast. To persist real data, wire up Supabase (free tier is more than enough for a small boutique):
+
+1. Create a project at [supabase.com](https://supabase.com) — pick the **closest region to your customers** (Mumbai for India).
+2. In the dashboard, open **SQL Editor → New query** and run `db/schema.sql`. Then run `db/seed.sql` to insert the six Mithila products.
+3. Open **Settings → API** and copy:
+   - **Project URL** → `SUPABASE_URL` in `script.js`
+   - **anon public** key → `SUPABASE_ANON_KEY` in `script.js`
+
+Once configured, the site will:
+- Load products from the `products` table (so you can add new sarees from the Supabase dashboard without editing HTML)
+- Save every checkout into the `orders` table (with items, shipping address, totals, payment status)
+- Save newsletter signups into `newsletter_signups`
+
+### What goes where
+
+| Table | Written by | Read by |
+|---|---|---|
+| `products` | Admin (you, in Supabase dashboard) | Public storefront |
+| `orders` | Customer at checkout (anon insert) | You via the dashboard |
+| `newsletter_signups` | Newsletter form | You via the dashboard |
+
+Row-Level Security is enabled on all three. Customers can place orders but can never read other people's orders. Admin views should use the **service-role key** from a backend, never in the browser.
+
+### Adding photos to products
+
+The `products` table has an optional `image_url` column. Upload an image to Supabase Storage (or any CDN), paste the URL there, and it'll appear on the storefront automatically — replacing the gradient placeholder.
 
 ## Payments
 
