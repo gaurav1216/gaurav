@@ -1,6 +1,6 @@
-# Maison Élise — Boutique Website
+# Mithila Boutique — Indian Fashion Website
 
-A static, single-page boutique website with cart and Stripe checkout. No build step — open `index.html` in a browser, or serve the folder with any static server.
+A static, single-page boutique site for an Indian heritage-fashion brand. Cart, INR pricing, and a checkout that runs in demo mode out-of-the-box and plugs into Stripe (or Razorpay) when you add keys.
 
 ## Files
 - `index.html` — markup (storefront, cart drawer, checkout modal, success toast)
@@ -62,6 +62,26 @@ Other tunables at the top of `script.js`:
 | `TAX_RATE` | `0.08` | Estimated tax shown on summary |
 | `FREE_SHIPPING_THRESHOLD` | `200` | Free shipping over this subtotal |
 | `SHIPPING_FEE` | `18` | Flat shipping fee otherwise |
+
+### Razorpay (recommended for India)
+
+Razorpay supports UPI, cards, net banking, and wallets — all in one widget. Replace the Stripe block in `script.js` with:
+
+```js
+const options = {
+  key: 'rzp_test_...',
+  amount: cart.total() * 100,   // paise
+  currency: 'INR',
+  name: 'Mithila Boutique',
+  description: 'Order from Mithila Boutique',
+  handler: (response) => onPaymentSuccess(response),
+  prefill: { email: form.email.value, contact: form.phone?.value },
+  theme: { color: '#5d4326' },
+};
+new Razorpay(options).open();
+```
+
+Add `<script src="https://checkout.razorpay.com/v1/checkout.js"></script>` to `index.html`.
 
 ### PayPal / Apple Pay
 

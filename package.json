@@ -1,8 +1,8 @@
 {
-  "name": "maison-elise",
+  "name": "mithila-boutique",
   "version": "1.0.0",
   "private": true,
-  "description": "Maison Élise — a static boutique website with cart and Stripe checkout",
+  "description": "Mithila Boutique — a static Indian fashion boutique website with cart and checkout",
   "scripts": {
     "start": "serve . -l 8000",
     "dev": "serve . -l 8000"

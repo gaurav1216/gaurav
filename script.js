@@ -1,26 +1,27 @@
 /* ─────────────────────────────────────────────────────────
-   Maison Élise — front-end
-   Cart + Stripe checkout (with demo mode fallback)
+   Mithila Boutique — front-end
+   Cart + payment checkout (with demo mode fallback)
    ───────────────────────────────────────────────────────── */
 
-// To enable real Stripe payments:
+// To enable real card payments via Stripe:
 //   1. Set STRIPE_PUBLISHABLE_KEY to your live/test key (pk_...)
 //   2. Set CHECKOUT_ENDPOINT to a backend URL that creates a PaymentIntent
 //      and returns its client_secret. (Stripe never lets the browser
 //      create PaymentIntents — a tiny serverless function is required.)
-//   3. Set TAX_RATE / SHIPPING / CURRENCY to taste.
+//
+// For India-only stores you can also use Razorpay or PayU — see README.
 //
 // Without a key, the site runs in DEMO mode: the form works end-to-end
 // and shows a success state, but no charge is made.
 const STRIPE_PUBLISHABLE_KEY = ''; // e.g. 'pk_test_...'
 const CHECKOUT_ENDPOINT = '';      // e.g. '/api/create-payment-intent'
-const CURRENCY = 'USD';
-const CURRENCY_SYMBOL = '$';
-const TAX_RATE = 0.08;
-const FREE_SHIPPING_THRESHOLD = 200;
-const SHIPPING_FEE = 18;
+const CURRENCY = 'INR';
+const CURRENCY_SYMBOL = '₹';
+const TAX_RATE = 0.05; // GST on apparel < ₹1000 is 5%, ≥ ₹1000 is 12%. Keep simple.
+const FREE_SHIPPING_THRESHOLD = 2500;
+const SHIPPING_FEE = 150;
 
-const fmt = (n) => `${CURRENCY_SYMBOL}${n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+const fmt = (n) => `${CURRENCY_SYMBOL}${Math.round(n).toLocaleString('en-IN')}`;
 
 /* ─────────── Reveal-on-scroll ─────────── */
 const io = new IntersectionObserver(
@@ -62,7 +63,7 @@ if (heroMedia && window.matchMedia('(min-width: 768px)').matches) {
 /* ─────────────────────────────────────────────────────────
    CART
    ───────────────────────────────────────────────────────── */
-const CART_KEY = 'maisonelise_cart_v1';
+const CART_KEY = 'mithila_cart_v1';
 
 const cart = {
   items: JSON.parse(localStorage.getItem(CART_KEY) || '[]'),

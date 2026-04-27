@@ -199,23 +199,23 @@ section { padding: 110px 0; }
   content: ''; position: absolute; inset: 0;
   background-size: cover; background-position: center;
 }
-.product-image[data-shape="linen-dress"]::before {
-  background: linear-gradient(160deg, #e7dccb 0%, #c9b89b 70%, #a08763 100%);
+.product-image[data-shape="anarkali"]::before {
+  background: linear-gradient(160deg, #f3d9b1 0%, #c97a4a 60%, #7d2e1f 100%);
 }
-.product-image[data-shape="cashmere"]::before {
-  background: linear-gradient(180deg, #d8c8a8 0%, #b09875 100%);
+.product-image[data-shape="pashmina"]::before {
+  background: linear-gradient(180deg, #efe1cd 0%, #b09064 100%);
 }
-.product-image[data-shape="tote"]::before {
-  background: linear-gradient(135deg, #8e6a4a 0%, #5d4226 100%);
+.product-image[data-shape="potli"]::before {
+  background: linear-gradient(135deg, #c63a3a 0%, #6e1818 100%);
 }
-.product-image[data-shape="ceramic"]::before {
-  background: linear-gradient(180deg, #ece6dc 0%, #c5b8a3 100%);
+.product-image[data-shape="diya"]::before {
+  background: linear-gradient(180deg, #f6e3b6 0%, #c08a3a 100%);
 }
-.product-image[data-shape="silk"]::before {
-  background: linear-gradient(120deg, #f0d8c2 0%, #d4a98a 60%, #9a6f50 100%);
+.product-image[data-shape="dupatta"]::before {
+  background: linear-gradient(120deg, #ffd47a 0%, #e07a3c 60%, #8c2a1a 100%);
 }
-.product-image[data-shape="loafer"]::before {
-  background: linear-gradient(160deg, #3d2c1e 0%, #6b4a2f 100%);
+.product-image[data-shape="mojari"]::before {
+  background: linear-gradient(160deg, #5b1e1e 0%, #b15c2a 100%);
 }
 .product-image::after {
   content: ''; position: absolute; inset: 0;
@@ -432,12 +432,12 @@ section { padding: 110px 0; }
 .cart-thumb {
   width: 72px; aspect-ratio: 4/5; border-radius: 4px; background: var(--bg-alt);
 }
-.cart-thumb[data-shape="p-linen-dress"] { background: linear-gradient(160deg, #e7dccb, #a08763); }
-.cart-thumb[data-shape="p-cashmere"] { background: linear-gradient(180deg, #d8c8a8, #b09875); }
-.cart-thumb[data-shape="p-tote"] { background: linear-gradient(135deg, #8e6a4a, #5d4226); }
-.cart-thumb[data-shape="p-ceramic"] { background: linear-gradient(180deg, #ece6dc, #c5b8a3); }
-.cart-thumb[data-shape="p-silk"] { background: linear-gradient(120deg, #f0d8c2, #9a6f50); }
-.cart-thumb[data-shape="p-loafer"] { background: linear-gradient(160deg, #3d2c1e, #6b4a2f); }
+.cart-thumb[data-shape="p-anarkali"] { background: linear-gradient(160deg, #f3d9b1, #7d2e1f); }
+.cart-thumb[data-shape="p-pashmina"] { background: linear-gradient(180deg, #efe1cd, #b09064); }
+.cart-thumb[data-shape="p-potli"] { background: linear-gradient(135deg, #c63a3a, #6e1818); }
+.cart-thumb[data-shape="p-diya"] { background: linear-gradient(180deg, #f6e3b6, #c08a3a); }
+.cart-thumb[data-shape="p-dupatta"] { background: linear-gradient(120deg, #ffd47a, #8c2a1a); }
+.cart-thumb[data-shape="p-mojari"] { background: linear-gradient(160deg, #5b1e1e, #b15c2a); }
 
 .cart-info h4 { font-family: var(--serif); font-size: 1.05rem; text-transform: none; letter-spacing: 0; font-weight: 500; margin-bottom: 4px; }
 .cart-info .item-price { font-family: var(--serif); font-size: 0.95rem; color: var(--ink-soft); margin: 0 0 8px; }
